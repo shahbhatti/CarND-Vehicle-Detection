@@ -8,7 +8,7 @@ In this project, our goal is to write a software pipeline to detect vehicles in 
 The goals / steps of this project are the following:
 
 * Perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a  Linear SVM classifier
-* Optionally, you can also apply a color transform and append binned color features, as well as histograms of color, to your HOG feature vector. 
+* Optionally, you can also apply a color transform and append binned color features, as well as histograms of color, to your HOG feature vector.
 * Note: for those first two steps don't forget to normalize your features and randomize a selection for training and testing.
 * Implement a sliding-window technique and use your trained classifier to search for vehicles in images.
 * Run your pipeline on a video stream (start with the test_video.mp4 and later implement on full project_video.mp4) and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
@@ -18,7 +18,7 @@ The goals / steps of this project are the following:
 
 
 ```python
-import glob 
+import glob
 import numpy as np
 import skimage
 from skimage import data, color, exposure
@@ -36,7 +36,7 @@ print('number of cars: ', len(cars))
 for name in non_cars_in:    
     notcars.append(skimage.io.imread(name))
 print('number of non-cars: ', len(notcars))
-    
+
 print()
 print("Image Shape: {}".format(cars[0].shape))
 
@@ -45,7 +45,7 @@ filepaths = np.hstack((cars_in[slice(None)], non_cars_in[slice(None)]))
 
     number of cars:  8792
     number of non-cars:  8968
-    
+
     Image Shape: (64, 64, 3)
 
 
@@ -66,22 +66,22 @@ from sklearn.model_selection import train_test_split
 %matplotlib inline
 
 # Define a function to return HOG features and visualization
-def img_get_hog_features(img, orient, pix_per_cell, cell_per_block, 
+def img_get_hog_features(img, orient, pix_per_cell, cell_per_block,
                         vis=False, feature_vec=True):
     # Call with two outputs if vis==True
     if vis == True:
         features, hog_image = hog(img, orientations=orient, pixels_per_cell=(pix_per_cell, pix_per_cell),
-                                  cells_per_block=(cell_per_block, cell_per_block), transform_sqrt=True, 
+                                  cells_per_block=(cell_per_block, cell_per_block), transform_sqrt=True,
                                   visualise=vis, feature_vector=feature_vec)
         return features, hog_image
     # Otherwise call with one output
     else:      
         features = hog(img, orientations=orient, pixels_per_cell=(pix_per_cell, pix_per_cell),
-                       cells_per_block=(cell_per_block, cell_per_block), transform_sqrt=True, 
+                       cells_per_block=(cell_per_block, cell_per_block), transform_sqrt=True,
                        visualise=vis, feature_vector=feature_vec)
         return features
 
-### Feature extraction parameters 
+### Feature extraction parameters
 orient = 9
 pix_per_cell = 8
 cell_per_block = 2
@@ -90,7 +90,7 @@ cell_per_block = 2
 feature_image = cars[5]
 gray = cv2.cvtColor(feature_image, cv2.COLOR_RGB2GRAY)
 
-hog_features, hog_image = img_get_hog_features(gray, orient, 
+hog_features, hog_image = img_get_hog_features(gray, orient,
                           pix_per_cell, cell_per_block, vis=True,
                           feature_vec=True)
 
@@ -105,7 +105,7 @@ ax2.set_title('HOG Image')
 feature_image = notcars[5]
 gray = cv2.cvtColor(feature_image, cv2.COLOR_RGB2GRAY)
 
-hog_features, hog_image = img_get_hog_features(gray, orient, 
+hog_features, hog_image = img_get_hog_features(gray, orient,
                           pix_per_cell, cell_per_block, vis=True,
                           feature_vec=True)
 
@@ -149,13 +149,13 @@ def draw_boxes(img, bboxes, color=(0, 0, 255), thick=6):
         cv2.rectangle(imcopy, bbox[0], bbox[1], color, thick)
     # Return the image copy with boxes drawn
     return imcopy
-    
-    
+
+
 # Define a function that takes an image,
-# start and stop positions in both x and y, 
+# start and stop positions in both x and y,
 # window size (x and y dimensions),  
 # and overlap fraction (for both x and y)
-def slide_window(img, x_start_stop=[None, None], y_start_stop=[400, 700], 
+def slide_window(img, x_start_stop=[None, None], y_start_stop=[400, 700],
                     xy_window=(64, 64), xy_overlap=(0.5, 0.5)):
     # If x and/or y start/stop positions not defined, set to image size
     if x_start_stop[0] == None:
@@ -175,8 +175,8 @@ def slide_window(img, x_start_stop=[None, None], y_start_stop=[400, 700],
     # Compute the number of windows in x/y
     nx_buffer = np.int(xy_window[0]*(xy_overlap[0]))
     ny_buffer = np.int(xy_window[1]*(xy_overlap[1]))
-    nx_windows = np.int((xspan-nx_buffer)/nx_pix_per_step) 
-    ny_windows = np.int((yspan-ny_buffer)/ny_pix_per_step) 
+    nx_windows = np.int((xspan-nx_buffer)/nx_pix_per_step)
+    ny_windows = np.int((yspan-ny_buffer)/ny_pix_per_step)
     # Initialize a list to append window positions to
     window_list = []
     # Loop through finding x and y window positions
@@ -196,9 +196,9 @@ def slide_window(img, x_start_stop=[None, None], y_start_stop=[400, 700],
     return window_list
 
 
-windows = slide_window(image, x_start_stop=[600, 1280], y_start_stop=[400, 700], 
+windows = slide_window(image, x_start_stop=[600, 1280], y_start_stop=[400, 700],
                     xy_window=(64, 64), xy_overlap=(0.75, 0.75))
-                       
+
 window_img = draw_boxes(image, windows, color=(0, 0, 255), thick=6)                    
 plt.imshow(window_img)
 ```
@@ -219,7 +219,7 @@ plt.imshow(window_img)
 
 ## Let us perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a classifier Linear SVM classifier.
 
-In this code in the cell below, we extract HOG, color histogram and spatial features and train the SVM classifier. 
+In this code in the cell below, we extract HOG, color histogram and spatial features and train the SVM classifier.
 
 We use the following parameters for each color channel for the HOG feature estraction: orientations=9, pixels_per_cell=(8,8), cells_per_block=(2,2)). For a 64X64 image it generates 5292 features (7X7X2X2X9X3 = 5292)
 
@@ -227,7 +227,7 @@ We use 32 bins for the color histogram feature extraction for each color channel
 
 We resize the image to 32X32 for spatial feature extraction which yields 1024 features for each color channel. This yields 3072 features (32X32X3 = 3072).
 
-The total number of features for HOG, color histogram and spatial is 8460 features per image (5292+96+3072= 8460). We randomly split the total number of features for training and testing. 
+The total number of features for HOG, color histogram and spatial is 8460 features per image (5292+96+3072= 8460). We randomly split the total number of features for training and testing.
 
 StandardScaler was used to scale the features down evenly with a zero mean.
 
@@ -249,7 +249,7 @@ from skimage.feature import hog
 
 
 def read_rgb_image(filepath, filetype="jpg"):
-    
+
     image = mpimg.imread(filepath)
 
     if filetype == "png":
@@ -257,44 +257,44 @@ def read_rgb_image(filepath, filetype="jpg"):
 
     return image
 
-def get_hog_features(image, 
+def get_hog_features(image,
                     channel,
                     vis=False,
                     orientations=9,
                     pixels_per_cell=(8,8),
                     cells_per_block=(2,2)):
     if vis == True:
-        features, hog_image = hog(image[:, :, channel], visualise=vis, feature_vector=True, 
+        features, hog_image = hog(image[:, :, channel], visualise=vis, feature_vector=True,
                                   orientations=orientations, pixels_per_cell=pixels_per_cell,
                                   cells_per_block=cells_per_block)
         return features, hog_image
     # Otherwise call with one output
     else:      
-        features = hog(image[:, :, channel], visualise=vis, feature_vector=True, 
+        features = hog(image[:, :, channel], visualise=vis, feature_vector=True,
                                   orientations=orientations, pixels_per_cell=pixels_per_cell,
                                   cells_per_block=cells_per_block)
         return features
-    
+
 def get_hist_features(image, bins=32):
     histogram_0 = np.histogram(image[:, :, 0], bins=bins)
     histogram_1 = np.histogram(image[:, :, 1], bins=bins)
     histogram_2 = np.histogram(image[:, :, 2], bins=bins)
-    
+
     features = np.concatenate((
         histogram_0[0],
         histogram_1[0],
         histogram_2[0],))
-    
+
     return features
 
 def get_spatial_features(image, size=(32,32)):
     features = cv2.resize(image, size).ravel()
-    
+
     return features
 
 def extract_image_features(image):
     image = cv2.cvtColor(image, cv2.COLOR_RGB2YCrCb) #convert image to YCrCb
-    
+
     hog_features_0 = get_hog_features(image, 0)
     hog_features_1 = get_hog_features(image, 1)
     hog_features_2 = get_hog_features(image, 2)
@@ -306,7 +306,7 @@ def extract_image_features(image):
     #print('spatial: ', len(spatial_features))
     features = np.concatenate([hog_features, hist_features, spatial_features])
     #print('featuress: ', len(features))
-    
+
     return features
 
 def scale_features(features):
@@ -345,8 +345,8 @@ print('split features')
 rand = np.random.randint(0, 100)
 X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=rand)
 
-# ***shuffle data 
-X_train, y_train = shuffle(X_train, y_train) 
+# ***shuffle data
+X_train, y_train = shuffle(X_train, y_train)
 
 # define a linear support vector calssifier (svc)
 print('define svc')
@@ -386,7 +386,7 @@ print(round(t2-t, 5), 'Seconds to predict', n_predict,'labels with SVC')
 
 ## Let us find some cars!
 
-In the next code cell we perform the sliding window search and vehicle detection for a test image. Earlier we had implemented the sliding window during experimentation. Now we use it for vehicle detection. We use two size windows 128X128 and 64X64. We resize the 128X128 sliding window to 64X64 before we extract features. Also we restrict our search to the lower right half of the image to optimize performance and reduce false positives. 
+In the next code cell we perform the sliding window search and vehicle detection for a test image. Earlier we had implemented the sliding window during experimentation. Now we use it for vehicle detection. We use two size windows 128X128 and 64X64. We resize the 128X128 sliding window to 64X64 before we extract features. Also we restrict our search to the lower right half of the image to optimize performance and reduce false positives.
 
 We iterate through each sliding window to detect vehicles, calculating the features for each sliding window then running that through the classifier. If a car is predicted, the bounding boxes of the window are saved. Heat was applied to each sliding window that detected a car. Overlapping bounding boxes indicated an actual car. It reduces the number of false positives. An image at each stage of the pipeline is shown below.
 
@@ -431,36 +431,36 @@ def draw_labeled_bboxes(img, labels):
     return img
 
 def find_cars(model, image):    
-    windows128 = slide_window(image, x_start_stop=[600, 1280], y_start_stop=[400, 700], 
+    windows128 = slide_window(image, x_start_stop=[600, 1280], y_start_stop=[400, 700],
                     xy_window=(128, 128), xy_overlap=(0.75, 0.75))
-    windows64 = slide_window(image, x_start_stop=[600, 1280], y_start_stop=[400, 700], 
+    windows64 = slide_window(image, x_start_stop=[600, 1280], y_start_stop=[400, 700],
                     xy_window=(64, 64), xy_overlap=(0.75, 0.75))
     windows = windows128+windows64
-    
+
     #print(len(windows))
     #print(windows[0])
-   
+
     features = []
-    bounding_boxes = [] 
+    bounding_boxes = []
     for ((start_x, start_y), (end_x, end_y)) in windows:
         slice_x = slice(start_x, end_x)
         slice_y = slice(start_y, end_y)
         image_slice = image[slice_y, slice_x]
         image_slice = cv2.resize(image_slice, (64,64))
-        
+
         #plt.imshow(image_slice)
         features = (extract_image_features(image_slice))
         features = features.reshape((1,-1))
         features = scaler.transform(features)
-        
+
         prediction = model.predict(features)
-                
+
         if (prediction == 1):
             bounding_boxes.append(((start_x, start_y), (end_x, end_y)))
-    
-    
+
+
     return image, bounding_boxes    
-    
+
 #f, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(1, 2, figsize=(13, 12))
 f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(13, 12))
 f.tight_layout()
@@ -529,8 +529,8 @@ def process_image(img):
     labels = label(heatmap)
     result = draw_labeled_bboxes(np.copy(img), labels)
     return result    
-    
-    
+
+
 # Import everything needed to edit/save/watch video clips
 from moviepy.editor import VideoFileClip
 from IPython.display import HTML
@@ -548,8 +548,8 @@ white_clip = clip1.fl_image(process_image)
 
 
     [MoviePy] Done.
-    [MoviePy] >>>> Video ready: P5_test_video.mp4 
-    
+    [MoviePy] >>>> Video ready: P5_test_video.mp4
+
     CPU times: user 1min 39s, sys: 124 ms, total: 1min 39s
     Wall time: 1min 41s
 
@@ -569,19 +569,19 @@ def process_image(img):
     global heatmap_sum
     heatmap_sum = heatmap_sum + heatmap
     heatmaps.append(heatmap)
-    
+
     # subtract off old heat map to keep running sum of last n heatmaps
     if len(heatmaps)>15:
         old_heatmap = heatmaps.pop(0)
         heatmap_sum -= old_heatmap
         heatmap_sum = np.clip(heatmap_sum,0.0,1000000.0)
-    
+
     heatmap = apply_threshold(heatmap_sum,1)
-    
+
     labels = label(heatmap)
     draw_img = draw_labeled_bboxes(np.copy(img), labels)
     return draw_img
-    
+
 # Import everything needed to edit/save/watch video clips
 from moviepy.editor import VideoFileClip
 from IPython.display import HTML
@@ -591,12 +591,14 @@ white_clip = clip1.fl_image(process_image)
 %time white_clip.write_videofile(project_video_output, audio=False)
 ```
 
+You may view the video here: https://www.youtube.com/watch?v=Vin_ROZP7wc
+
 ## Discussion
-Here are the salient points: 
-1. This code should be optimized. Just ran out of time! 
-2. Many approaches (Decision Tree, for example) were not even attempted. 
+Here are the salient points:
+1. This code should be optimized. Just ran out of time!
+2. Many approaches (Decision Tree, for example) were not even attempted.
 3. Challenge problems were not even attempted.
-4. Need to develop better debugging techniques (to view intermediate results, for example). 
+4. Need to develop better debugging techniques (to view intermediate results, for example).
 5. As usual, this project was a humbling experience. I wish I could work on it full time!!
 
 
